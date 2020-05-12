@@ -18,37 +18,42 @@ export const initialState = {
 };
 
 export const carReducer = (state = initialState, action) => {
+  const getPriceOfAdditionals = (additionals = []) => {
+    return additionals.reduce((accumulator, additionals) => {
+      return accumulator + additionals.price;
+    }, 0);
+  }
+
   switch (action.type) {
     case ADD_FEATURE:
       const feature = state.additionalFeatures.find(feature => {
         return feature.id === action.payload;
       });
+      const uniqueFeatures = [ // Creates a new array from the car features array that has no duplicates
+        ...new Set([
+          ...state.car.features,
+          feature
+        ])
+      ]
       return {
         ...state,
-        additionalPrice: state.additionalPrice + feature.price,
+        additionalPrice: getPriceOfAdditionals(uniqueFeatures),
         car: {
           ...state.car,
-          features: [
-            ...state.car.features,
-            feature
-          ]
+          features: uniqueFeatures
         }
       }
     case REMOVE_FEATURE:
-      const updatedFeatures = state.car.features.filter(feature => {
+      const filteredFeatures = state.car.features.filter(feature => {
         return feature.id !== action.payload;
       });
 
-      const updatedAdditionalPrice = updatedFeatures.reduce((acc, feature) => {
-        return acc + feature.price;
-      }, 0);
-
       return {
         ...state,
-        additionalPrice: updatedAdditionalPrice,
+        additionalPrice: getPriceOfAdditionals(filteredFeatures),
         car: {
           ...state.car,
-          features: updatedFeatures
+          features: filteredFeatures
         }
       }
     default:
