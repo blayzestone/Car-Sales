@@ -1,3 +1,5 @@
+import { ADD_FEATURE } from '../actions/featureActions';
+
 export const initialState = {
   additionalPrice: 0,
   car: {
@@ -17,6 +19,18 @@ export const initialState = {
 
 export const carReducer = (state = initialState, action) => {
   switch (action.type) {
+    case ADD_FEATURE:
+      const feature = state.additionalFeatures.find(feature => feature.id === action.payload);
+      return {
+        ...state,
+        car: {
+          ...state.car,
+          features: [
+            ...state.car.features,
+            feature
+          ]
+        }
+      }
     default:
       return state;
   }
